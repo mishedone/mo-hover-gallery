@@ -158,7 +158,7 @@ moHoverGallery.prototype.getElementByCoords = function(top, left) {
     if (typeof this.elements.get === 'function') {
         this.elements.each(function(index, value) {
             var element  = $(value),
-                position = element.position(),
+                position = element.offset(),
                 elTop    = position.top,
                 elLeft   = position.left,
                 elRight  = elLeft + element.width(),
