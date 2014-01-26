@@ -1,0 +1,35 @@
+div.mo-hover-gallery * {
+    margin: 0px;
+    border: 0px;
+    padding: 0px;
+    outline: none;
+}
+div.mo-hover-gallery .clear {
+    clear: both;
+}
+div.mo-hover-gallery ul {
+    clear: both;
+    list-style: none;
+}
+div.mo-hover-gallery ul li {
+    float: left;
+    padding: 0px 5px;
+}
+div.mo-hover-gallery ul li a {
+    display: block;
+    width: 80px;
+    height: 60px;
+    cursor: default;
+}
+
+/* popup styles */
+div.mo-hover-gallery-popup {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+}
+div.static-mo-hover-gallery-popup {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+}
