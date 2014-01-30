@@ -188,6 +188,19 @@ moHoverGallery.prototype.getImageFromElement = function(element) {
 };
 
 /**
+ * Adds a custom check so extra rules can defined for when the mouse is over an
+ * element. This is usefull if you want a scrolling gallery for example.
+ * 
+ * @param {Object} event A mouse move event.
+ * @returns {Boolean}
+ */
+moHoverGallery.prototype.customIsOverElement = function(event) {
+    console.log('damn');
+    
+    return true;
+};
+
+/**
  * Handles mouse move events.
  * 
  * @param {Object} event A mouse move event.
@@ -195,7 +208,7 @@ moHoverGallery.prototype.getImageFromElement = function(element) {
  */
 moHoverGallery.prototype.onMouseMove = function(event) {
     var element       = this.getElementByCoords(event.pageY, event.pageX),
-        isOverElement = element !== null,
+        isOverElement = element !== null && this.customIsOverElement(event),
         isAlreadyOpen = isOverElement && element === this.currentElement;
     if (isOverElement) {
         if (!isAlreadyOpen) {

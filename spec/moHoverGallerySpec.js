@@ -260,15 +260,26 @@ $(document).ready(function() {
             });
         });
         
+        describe('can check a custom is over element rule - a method with the same name', function() {
+            it('that returns true by default', function() {
+                expect(gallery.customIsOverElement()).toBeTruthy();
+            });
+        });
+        
         describe('can handle mouse moves', function() {
             afterEach(function() {
                 gallery.closePopup();
             });
             it('by checking if the mouse is over an element', function() {
                 spyOn(gallery, 'getElementByCoords');
-                gallery.onMouseMove({pageX: 10, pageY: 10});
+                gallery.onMouseMove({pageX: 200, pageY: 200});
                 gallery.onMouseMove({pageX: 20, pageY: 20});
                 expect(gallery.getElementByCoords.calls.count()).toBe(2);
+            });
+            it('by checking if the custom is over element rule is ok with the current mouse coordinates', function() {
+                spyOn(gallery, 'customIsOverElement');
+                gallery.onMouseMove({pageX: 20, pageY: 20});
+                expect(gallery.customIsOverElement.calls.count()).toBe(1);
             });
             it('by opening the popup if the mouse is over an element', function() {
                 spyOn(gallery, 'openPopup');
