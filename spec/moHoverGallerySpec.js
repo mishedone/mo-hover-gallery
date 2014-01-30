@@ -362,5 +362,6 @@ function readFile(url, callback) {
     });
 }
 
-// new feature
-// - have a flag for disabling the create popup method
+// improvement idea:
+// make public methods for fetching element coordinates and checking if the mouse is in coordinates
+
