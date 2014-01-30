@@ -195,8 +195,6 @@ moHoverGallery.prototype.getImageFromElement = function(element) {
  * @returns {Boolean}
  */
 moHoverGallery.prototype.customIsOverElement = function(event) {
-    console.log('damn');
-    
     return true;
 };
 
