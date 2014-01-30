@@ -361,7 +361,3 @@ function readFile(url, callback) {
         }
     });
 }
-
-// improvement idea:
-// make public methods for fetching element coordinates and checking if the mouse is in coordinates
-
