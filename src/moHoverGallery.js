@@ -6,20 +6,20 @@
  * @constructor
  */
 function moHoverGallery(options) {
-    var self = this, shouldInitialize = null;
+    var self = this, start = null;
     
     // define default options
-    self.elements           = {};
-    self.currentElement     = null;
-    self.popupClass         = null;
-    self.popupId            = 'mo-hover-gallery-popup';
-    self.imageWildcard      = '%IMAGEPATH%';
-    self.popupTemplate      = '<img src="' + self.imageWildcard + '" alt="mo-hover-gallery-image">';
-    self.positionPopup      = 'positionPopupInScreenCenter';
-    self.imageCache         = [];
-    self.initialIndex       = null;
-    self.disableCreatePopup = false;
-    self.disableClosePopup  = false;
+    self.thumbs          = {};
+    self.current         = null;
+    self.popupClass      = null;
+    self.popupId         = 'mo-hover-gallery-popup';
+    self.imageWildcard   = '%IMAGEPATH%';
+    self.popupTemplate   = '<img src="' + self.imageWildcard + '" alt="mo-hover-gallery-image">';
+    self.positionPopup   = 'positionPopupInScreenCenter';
+    self.imageCache      = [];
+    self.startIndex      = null;
+    self.skipCreatePopup = false;
+    self.skipClosePopup  = false;
     
     // update the options based on the passed JSON
     for (var key in options) {
@@ -39,23 +39,23 @@ function moHoverGallery(options) {
         self.onMouseMove(event);
     });
     
-    // open the popup if there is a valid initial index
-    shouldInitialize = self.initialIndex !== null && typeof self.elements[self.initialIndex] !== 'undefined';
-    if (shouldInitialize) {
-        this.openPopup(self.elements[self.initialIndex]);
+    // open the popup if there is a valid start index
+    start = self.startIndex !== null && typeof self.thumbs[self.startIndex] !== 'undefined';
+    if (start) {
+        this.openPopup(self.thumbs[self.startIndex]);
     }
 }
 
 /**
- * Creates a new div element appended to the body if it's missing. Can be disabled
- * by the disableCreatePopup flag.
+ * Creates a new div element appended to the body if it's missing. Can be skipped
+ * by the skipCreatePopup flag.
  * 
  * @throws {Exception} When the popup has been already created. 
  * @returns {undefined}
  */
 moHoverGallery.prototype.createPopup = function() {
     var htmlClass;
-    if (this.disableCreatePopup === false) {
+    if (this.skipCreatePopup === false) {
         if (this.selectPopup().length === 0) {
             htmlClass = this.popupClass === null ? '' : ' class="' + this.popupClass + '"';
             $(document.body).append('<div id="' + this.popupId + '"' + htmlClass + ' style="visibility: hidden;"></div>');
@@ -67,16 +67,16 @@ moHoverGallery.prototype.createPopup = function() {
 
 /**
  * Loads the popup content and makes it visible only if an image can be
- * extracted from the element parameter.
+ * extracted from the thumb parameter.
  * 
- * @param {Object} element
+ * @param {Object} thumb
  * @returns {undefined}
  */
-moHoverGallery.prototype.openPopup = function(element) {
+moHoverGallery.prototype.openPopup = function(thumb) {
     var popup     = this.selectPopup(),
-        imagePath = this.getImageFromElement(element);
+        imagePath = this.getImageFromThumb(thumb);
     if (imagePath !== null) {
-        this.currentElement = element;
+        this.current = thumb;
         popup.html(this.popupTemplate.replace(this.imageWildcard, imagePath));
         this[this.positionPopup]();
         popup.css({opacity: 0, visibility: 'visible'}).animate({opacity: 1.0}, 200);
@@ -84,14 +84,14 @@ moHoverGallery.prototype.openPopup = function(element) {
 };
 
 /**
- * Hides the popup. Can be disabled by the disableClosePopup flag.
+ * Hides the popup. Can be skipped by the skipClosePopup flag.
  * 
  * @returns {undefined}
  */
 moHoverGallery.prototype.closePopup = function() {
     var popup = this.selectPopup();
-    if (this.disableClosePopup === false) {
-        this.currentElement = null;
+    if (this.skipClosePopup === false) {
+        this.current = null;
         popup.html('');
         popup.css('visibility', 'hidden');
     }
@@ -113,16 +113,16 @@ moHoverGallery.prototype.positionPopupInScreenCenter = function() {
 };
 
 /**
- * Puts the popup relative to the hovered element starting from it's center.
+ * Puts the popup relative to the hovered thumb starting from it's center.
  * 
  * @returns {undefined}
  */
-moHoverGallery.prototype.positionPopupRelativeToElement = function() {
-    var element  = $(this.currentElement),
-        position = element.position(),
+moHoverGallery.prototype.positionPopupRelativeToThumb = function() {
+    var thumb    = $(this.current),
+        position = thumb.position(),
         popup    = this.selectPopup(),
-        top      = position.top + (element.height() / 2),
-        left     = position.left + (element.width() / 2);
+        top      = position.top + (thumb.height() / 2),
+        left     = position.left + (thumb.width() / 2);
     popup.css('top', top);
     popup.css('left', left);
 };
@@ -146,55 +146,82 @@ moHoverGallery.prototype.selectPopup = function() {
 };
 
 /**
- * Extracts an element out of the gallery elements collection if the passed 
+ * Returns the coordinates of a DOM element - top, bottom, left, right.
+ * 
+ * @param {Object} element
+ * @returns {Object}
+ */
+moHoverGallery.prototype.getElementCoords = function(element) {
+    var object = $(element),
+        offset = object.offset();
+    
+    return {
+        top: offset.top,
+        left: offset.left,
+        bottom: offset.top + object.height(),
+        right: offset.left + object.width()
+    };
+};
+
+/**
+ * Checks whether a certain position is within a certain DOM element.
+ * 
+ * @param {Number} top The Y position.
+ * @param {Number} left The X position.
+ * @param {Object} element
+ * @returns {Boolean}
+ */
+moHoverGallery.prototype.isPositionInElement = function(top, left, element) {
+    var coords = this.getElementCoords(element),
+        fitsX  = left >= coords.left && left <= coords.right,
+        fitsY  = top >= coords.top && top <= coords.bottom;
+
+    return fitsX && fitsY ? true : false;
+};
+
+/**
+ * Extracts a thumb out of the gallery thumbs collection if the passed 
  * coordinates are within it.
  * 
  * @param {Number} top The Y coordinate to search in.
  * @param {Number} left The X coordinate to search in.
  * @returns {Object|null}
  */
-moHoverGallery.prototype.getElementByCoords = function(top, left) {
-    var matchedElement = null;
-    if (typeof this.elements.get === 'function') {
-        this.elements.each(function(index, value) {
-            var element  = $(value),
-                position = element.offset(),
-                elTop    = position.top,
-                elLeft   = position.left,
-                elRight  = elLeft + element.width(),
-                elBottom = elTop + element.height(),
-                fitsX    = left >= elLeft && left <= elRight,
-                fitsY    = top >= elTop && top <= elBottom;
-            if (fitsX && fitsY) {
-                matchedElement = value;
+moHoverGallery.prototype.getThumbByCoords = function(top, left) {
+    var self         = this,
+        matchedThumb = null;
+    if (typeof this.thumbs.get === 'function') {
+        this.thumbs.each(function(index, value) {
+            if (self.isPositionInElement(top, left, value)) {
+                matchedThumb = value;
             }
         });
     }
     
-    return matchedElement;
+    return matchedThumb;
 };
 
 /**
- * Extracts an image out of an element. Override this method if you want to make
+ * Extracts an image out of a thumb. Override this method if you want to make
  * custom image path extractions.
  * 
- * @param {Object} element The element to extract image from.
+ * @param {Object} thumb The thumb to extract image from.
  * @returns {Object|null}
  */
-moHoverGallery.prototype.getImageFromElement = function(element) {
-    var imagePath = $(element).find('a').attr('href');
+moHoverGallery.prototype.getImageFromThumb = function(thumb) {
+    var imagePath = $(thumb).find('a').attr('href');
         
     return typeof imagePath === 'undefined' ? null : imagePath;
 };
 
 /**
- * Adds a custom check so extra rules can defined for when the mouse is over an
- * element. This is usefull if you want a scrolling gallery for example.
+ * Adds a custom check so extra rules can defined for when the mouse is over a 
+ * thumb or not. This is usefull if you want a scrolling gallery for example.
  * 
  * @param {Object} event A mouse move event.
  * @returns {Boolean}
  */
-moHoverGallery.prototype.customIsOverElement = function(event) {
+moHoverGallery.prototype.isOverThumb = function(event) {
     return true;
 };
 
@@ -205,12 +232,12 @@ moHoverGallery.prototype.customIsOverElement = function(event) {
  * @returns {undefined}
  */
 moHoverGallery.prototype.onMouseMove = function(event) {
-    var element       = this.getElementByCoords(event.pageY, event.pageX),
-        isOverElement = element !== null && this.customIsOverElement(event),
-        isAlreadyOpen = isOverElement && element === this.currentElement;
-    if (isOverElement) {
+    var thumb         = this.getThumbByCoords(event.pageY, event.pageX),
+        isOverThumb   = thumb !== null && this.isOverThumb(event),
+        isAlreadyOpen = isOverThumb && thumb === this.current;
+    if (isOverThumb) {
         if (!isAlreadyOpen) {
-            this.openPopup(element);
+            this.openPopup(thumb);
         }
     } else {
         this.closePopup();
@@ -218,15 +245,15 @@ moHoverGallery.prototype.onMouseMove = function(event) {
 };
 
 /**
- * Caches the images that are going to be loaded so things loaded quickly.
+ * Caches the images that are going to be loaded so things are loaded quickly.
  * 
  * @returns {undefined}
  */
 moHoverGallery.prototype.loadImageCache = function() {
     var self = this;
-    if (typeof this.elements.get === 'function') {
-        this.elements.each(function(index, value) {
-            var imagePath = self.getImageFromElement(value),
+    if (typeof this.thumbs.get === 'function') {
+        this.thumbs.each(function(index, value) {
+            var imagePath = self.getImageFromThumb(value),
                 img       = null;
             if (imagePath !== null) {
                 img     = new Image();
@@ -238,7 +265,7 @@ moHoverGallery.prototype.loadImageCache = function() {
 };
 
 /**
- * Removes all external relations of the gallery instance (as we know you there
+ * Removes all external relations of the gallery instance (as we know there
  * is no easy object deletion in JavaScript). 
  * 
  * @returns {undefined}
@@ -246,5 +273,5 @@ moHoverGallery.prototype.loadImageCache = function() {
 moHoverGallery.prototype.destroy = function() {
     this.selectPopup().remove();
     $(document).off('mousemove.' + this.popupId);
-    this.elements = {};
+    this.thumbs = {};
 };

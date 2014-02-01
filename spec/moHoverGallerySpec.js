@@ -10,8 +10,8 @@ $(document).ready(function() {
 
     // write spec
     describe('moHoverGallery', function() {
-        var elements = $('.hover-element'),
-            gallery  = new moHoverGallery({elements: elements, popupClass: 'mo-hover-gallery-popup'});
+        var thumbs  = $('.hover-thumb'),
+            gallery = new moHoverGallery({thumbs: thumbs, popupClass: 'mo-hover-gallery-popup'});
         beforeEach(function() {
             jQuery.fx.off = true;
         });
@@ -20,16 +20,16 @@ $(document).ready(function() {
         });
         
         describe('when created', function() {
-            it('contains a set of elements', function() {
-                expect(gallery.elements).toBe(elements);
+            it('contains a set of thumbs', function() {
+                expect(gallery.thumbs).toBe(thumbs);
             });
-            it('the elements are empty by default', function() {
+            it('the thumbs are empty by default', function() {
                 var emptyGallery = new moHoverGallery({popupId: 'empty-mo-hover-gallery-popup'});
-                expect(emptyGallery.elements).toEqual({});
+                expect(emptyGallery.thumbs).toEqual({});
                 emptyGallery.destroy();
             });
-            it('contains a current open element (null by default)', function() {
-                expect(gallery.currentElement).toBeNull();
+            it('contains a current open thumb (null by default)', function() {
+                expect(gallery.current).toBeNull();
             });
             it('contains a popup class (null by default)', function() {
                 var noClassGallery = new moHoverGallery({popupId: 'no-class-mo-hover-gallery-popup'});
@@ -54,16 +54,16 @@ $(document).ready(function() {
             it('contains an image cache object', function() {
                 expect(gallery.imageCache).toBeDefined();
             });
-            it('contains an element\'s index to initialize the popup with (null by default)', function() {
-                expect(gallery.initialIndex).toBeNull();
+            it('contains a thumb\'s index to start the gallery with (null by default)', function() {
+                expect(gallery.startIndex).toBeNull();
             });
-            it('contains a disable create popup flag (false by default)', function() {
-                expect(gallery.disableCreatePopup).toBeDefined();
-                expect(gallery.disableCreatePopup).toBeFalsy();
+            it('contains a skip create popup flag (false by default)', function() {
+                expect(gallery.skipCreatePopup).toBeDefined();
+                expect(gallery.skipCreatePopup).toBeFalsy();
             });
-            it('contains a disable close popup flag (false by default)', function() {
-                expect(gallery.disableClosePopup).toBeDefined();
-                expect(gallery.disableClosePopup).toBeFalsy();
+            it('contains a skip close popup flag (false by default)', function() {
+                expect(gallery.skipClosePopup).toBeDefined();
+                expect(gallery.skipClosePopup).toBeFalsy();
             });
             it('creates a popup div appended to the body', function() {
                 expect(gallery.selectPopup().length).not.toBe(0);
@@ -76,15 +76,15 @@ $(document).ready(function() {
                 $(document).mousemove();
                 expect(gallery.onMouseMove.calls.count()).toBe(1);
             });
-            it('initializes the gallery if the initial index is valid', function() {
-                var initGallery = new moHoverGallery({elements: elements, popupId: 'init-mo-hover-gallery-popup', initialIndex: 0});
-                expect(initGallery.currentElement).toBe(initGallery.elements[0]);
-                initGallery.destroy();
+            it('initializes the gallery if the start index is valid', function() {
+                var startGallery = new moHoverGallery({thumbs: thumbs, popupId: 'init-mo-hover-gallery-popup', startIndex: 0});
+                expect(startGallery.current).toBe(startGallery.thumbs[0]);
+                startGallery.destroy();
             });
-            it('does not initialize the gallery if the initial index is invalid', function() {
-                var initGallery = new moHoverGallery({elements: elements, popupId: 'init-mo-hover-gallery-popup', initialIndex: 4});
-                expect(initGallery.currentElement).toBeNull();
-                initGallery.destroy();
+            it('does not initialize the gallery if the start index is invalid', function() {
+                var startGallery = new moHoverGallery({thumbs: thumbs, popupId: 'init-mo-hover-gallery-popup', startIndex: 4});
+                expect(startGallery.current).toBeNull();
+                startGallery.destroy();
             });
         });    
         
@@ -107,8 +107,8 @@ $(document).ready(function() {
                 }).toThrow();
                 secondGallery.destroy();
             });
-            it('that is actually not created if the disable create popup flag is true', function() {
-                var noPopupGallery = new moHoverGallery({popupId: 'no-popup-mo-hover-gallery-popup', disableCreatePopup: true});
+            it('that is actually not created if the skip create popup flag is true', function() {
+                var noPopupGallery = new moHoverGallery({popupId: 'no-popup-mo-hover-gallery-popup', skipCreatePopup: true});
                 expect(noPopupGallery.selectPopup().length).toBe(0);
                 noPopupGallery.destroy();
             });
@@ -118,19 +118,19 @@ $(document).ready(function() {
             afterEach(function() {
                 gallery.closePopup();
             });
-            it('by extracting the image path from the passed element', function() {
-                spyOn(gallery, 'getImageFromElement');
-                gallery.openPopup(gallery.elements[0]);
+            it('by extracting the image path from the passed thumb', function() {
+                spyOn(gallery, 'getImageFromThumb');
+                gallery.openPopup(gallery.thumbs[0]);
                 gallery.closePopup();
                 gallery.openPopup({});
-                expect(gallery.getImageFromElement.calls.count()).toBe(2);
+                expect(gallery.getImageFromThumb.calls.count()).toBe(2);
             });
             describe('when an image path has been found', function() {
                 beforeEach(function() {
-                    gallery.openPopup(gallery.elements[0]);
+                    gallery.openPopup(gallery.thumbs[0]);
                 });
-                it('by setting the current element to the passed element', function() {
-                    expect(gallery.currentElement).toBe(gallery.elements[0]);
+                it('by setting the current thumb to the passed thumb', function() {
+                    expect(gallery.current).toBe(gallery.thumbs[0]);
                 });
                 it('by replacing the popup html with the combined popup template and target image', function() {
                     var popupImg     = $(gallery.selectPopup().html()),
@@ -140,7 +140,7 @@ $(document).ready(function() {
                 it('by calling the configured position popup method', function() {
                     spyOn(gallery, 'positionPopupInScreenCenter');
                     gallery.closePopup();
-                    gallery.openPopup(gallery.elements[0]);
+                    gallery.openPopup(gallery.thumbs[0]);
                     expect(gallery.positionPopupInScreenCenter.calls.count()).toBe(1);
                 });
                 it('by making it visible', function() {
@@ -151,8 +151,8 @@ $(document).ready(function() {
                 beforeEach(function() {
                     gallery.openPopup({});
                 });
-                it('by not setting the current element', function() {
-                    expect(gallery.currentElement).not.toBe({});
+                it('by not setting the current thumb', function() {
+                    expect(gallery.current).not.toBe({});
                 });
                 it('by not replacing the popup html', function() {
                     expect(gallery.selectPopup().html()).toBe('');
@@ -171,21 +171,21 @@ $(document).ready(function() {
         
         describe('can close the popup', function() {
             beforeEach(function() {
-                gallery.openPopup(gallery.elements[0]);
+                gallery.openPopup(gallery.thumbs[0]);
                 gallery.closePopup();
             });
-            it('only if the disable close popup flag is false', function() {
-                gallery.disableClosePopup = true;
-                gallery.openPopup(gallery.elements[0]);
+            it('only if the skip close popup flag is false', function() {
+                gallery.skipClosePopup = true;
+                gallery.openPopup(gallery.thumbs[0]);
                 gallery.closePopup();
-                expect(gallery.currentElement).not.toBeNull();
+                expect(gallery.current).not.toBeNull();
                 expect(gallery.selectPopup().html()).not.toEqual('');
                 expect(gallery.selectPopup().css('visibility')).toBe('visible');
-                gallery.disableClosePopup = false;
+                gallery.skipClosePopup = false;
                 gallery.closePopup();
             });
-            it('by setting the current element to null', function() {
-                expect(gallery.currentElement).toBeNull();
+            it('by setting the current thumb to null', function() {
+                expect(gallery.current).toBeNull();
             });
             it('by removing it\'s content', function() {
                 expect(gallery.selectPopup().html()).toBe('');
@@ -208,7 +208,7 @@ $(document).ready(function() {
                     expectedLeft = 0,
                     realTop      = 0,
                     realLeft     = 0;
-                gallery.openPopup(gallery.elements[0]);
+                gallery.openPopup(gallery.thumbs[0]);
                 expectedTop  = (winHeight - popup.height()) / 2;
                 expectedLeft = (winWidth - popup.width()) / 2;
                 realTop      = popup.css('top').replace('px', '') * 1;
@@ -216,12 +216,12 @@ $(document).ready(function() {
                 expect(Math.floor(realTop)).toBe(Math.floor(expectedTop));
                 expect(Math.floor(realLeft)).toBe(Math.floor(expectedLeft));
             });
-            it('next to a gallery element', function() {
+            it('next to a gallery thumb', function() {
                 var popup    = gallery.selectPopup(),
                     position = null;
-                gallery.positionPopup = 'positionPopupRelativeToElement';
-                gallery.openPopup(gallery.elements[0]);
-                position = $(gallery.elements[0]).position();
+                gallery.positionPopup = 'positionPopupRelativeToThumb';
+                gallery.openPopup(gallery.thumbs[0]);
+                position = $(gallery.thumbs[0]).position();
                 expect(popup.css('top')).toBe((position.top + 30) + 'px');
                 expect(popup.css('left')).toBe((position.left + 40) + 'px');
             });
@@ -230,7 +230,7 @@ $(document).ready(function() {
                 popup.css('top', '10px');
                 popup.css('right', '10px');
                 gallery.positionPopup = 'positionPopupStatically';
-                gallery.openPopup(gallery.elements[0]);
+                gallery.openPopup(gallery.thumbs[0]);
                 expect(popup.css('top')).toBe('10px');
                 expect(popup.css('right')).toBe('10px');
             });
@@ -242,27 +242,58 @@ $(document).ready(function() {
             });
         });
         
-        describe('can identify a certain element in the set', function() {
+        describe('can get the coordinates of an element', function() {
+            it('based on it\'s properties', function() {
+                var offset = $('body').offset();
+                expect(gallery.getElementCoords(thumbs[0])).toEqual({
+                    top: offset.top,
+                    left: offset.left, 
+                    bottom: offset.top + 60,
+                    right: offset.left + 80
+                });
+            });
+        });
+        
+        describe('can check if a certain position (X, Y) is in an element', function() {
+            it('and returns true if so', function() {
+                expect(gallery.isPositionInElement(25, 30, thumbs[0])).toBeTruthy();
+            });
+            it('and returns false if not', function() {
+                expect(gallery.isPositionInElement(25, 230, thumbs[0])).toBeFalsy();
+            });
+            it('by using the get element coordinates method', function() {
+                spyOn(gallery, 'getElementCoords').and.callThrough();;
+                gallery.isPositionInElement(25, 30, thumbs[0]);
+                expect(gallery.getElementCoords.calls.count()).toBe(1);
+            });
+        });
+        
+        describe('can identify a certain thumb in the set', function() {
             it('based on a pair of coordinates', function() {
-                expect(gallery.getElementByCoords(25, 30)).toEqual(elements[0]);
+                expect(gallery.getThumbByCoords(25, 30)).toEqual(thumbs[0]);
             });
             it('and returns null if no match is found', function() {
-                expect(gallery.getElementByCoords(200, 200)).toBeNull();
+                expect(gallery.getThumbByCoords(200, 200)).toBeNull();
+            });
+            it('by using the is position in element method', function() {
+                spyOn(gallery, 'isPositionInElement').and.callThrough();;
+                gallery.getThumbByCoords(25, 30);
+                expect(gallery.isPositionInElement.calls.count()).toBe(thumbs.length);
             });
         });
         
-        describe('can get an image path from a certain element in the set', function() {
+        describe('can get an image path from a certain thumb in the set', function() {
             it('based on the href of it\'s child anchor by default', function() {
-                expect(gallery.getImageFromElement(elements[0])).toBe('images/barbarian.jpg');
+                expect(gallery.getImageFromThumb(thumbs[0])).toBe('images/barbarian.jpg');
             });
             it('and returns null if nothing could be found', function() {
-                expect(gallery.getImageFromElement('sgogurmos')).toBeNull();
+                expect(gallery.getImageFromThumb('sgogurmos')).toBeNull();
             });
         });
         
-        describe('can check a custom is over element rule - a method with the same name', function() {
+        describe('can check a custom is over thumb rule', function() {
             it('that returns true by default', function() {
-                expect(gallery.customIsOverElement()).toBeTruthy();
+                expect(gallery.isOverThumb()).toBeTruthy();
             });
         });
         
@@ -270,30 +301,30 @@ $(document).ready(function() {
             afterEach(function() {
                 gallery.closePopup();
             });
-            it('by checking if the mouse is over an element', function() {
-                spyOn(gallery, 'getElementByCoords');
+            it('by checking if the mouse is over a thumb', function() {
+                spyOn(gallery, 'getThumbByCoords');
                 gallery.onMouseMove({pageX: 200, pageY: 200});
                 gallery.onMouseMove({pageX: 20, pageY: 20});
-                expect(gallery.getElementByCoords.calls.count()).toBe(2);
+                expect(gallery.getThumbByCoords.calls.count()).toBe(2);
             });
-            it('by checking if the custom is over element rule is ok with the current mouse coordinates', function() {
-                spyOn(gallery, 'customIsOverElement');
+            it('by checking if the custom is over thumb rule is ok with the current mouse coordinates', function() {
+                spyOn(gallery, 'isOverThumb');
                 gallery.onMouseMove({pageX: 20, pageY: 20});
-                expect(gallery.customIsOverElement.calls.count()).toBe(1);
+                expect(gallery.isOverThumb.calls.count()).toBe(1);
             });
-            it('by opening the popup if the mouse is over an element', function() {
+            it('by opening the popup if the mouse is over a thumb', function() {
                 spyOn(gallery, 'openPopup');
                 gallery.onMouseMove({pageX: 200, pageY: 200});
                 gallery.onMouseMove({pageX: 20, pageY: 20});
                 expect(gallery.openPopup.calls.count()).toBe(1);
             });
-            it('by not opening the popup if the mouse is over an already open element', function() {
+            it('by not opening the popup if the mouse is over an already open thumb', function() {
                 spyOn(gallery, 'openPopup').and.callThrough();
                 gallery.onMouseMove({pageX: 20, pageY: 20});
                 gallery.onMouseMove({pageX: 20, pageY: 20});
                 expect(gallery.openPopup.calls.count()).toBe(1);
             });
-            it('by closing the popup if the mouse is not over an element', function() {
+            it('by closing the popup if the mouse is not over a thumb', function() {
                 spyOn(gallery, 'closePopup');
                 gallery.onMouseMove({pageX: 20, pageY: 20});
                 gallery.onMouseMove({pageX: 20, pageY: 20});
@@ -301,14 +332,14 @@ $(document).ready(function() {
                 expect(gallery.closePopup.calls.count()).toBe(1);
             });
             it('always being sure to not switch the places of X and Y', function() {
-                spyOn(gallery, 'getElementByCoords');
+                spyOn(gallery, 'getThumbByCoords');
                 gallery.onMouseMove({pageX: 25, pageY: 20});
-                expect(gallery.getElementByCoords).toHaveBeenCalledWith(20, 25);
+                expect(gallery.getThumbByCoords).toHaveBeenCalledWith(20, 25);
             });
         });
         
         describe('can load images into cache', function() {
-            it('by creating an image object for each element', function() {
+            it('by creating an image object for each thumb', function() {
                 var expectedImg = new Image();
                 expectedImg.src = 'images/barbarian.jpg';
                 gallery.loadImageCache();
@@ -325,7 +356,7 @@ $(document).ready(function() {
                     counter     = 0;
                 gallery.destroy();
                 docEvents = $._data($(document)[0], 'events');
-                expect(gallery.elements).toEqual({});
+                expect(gallery.thumbs).toEqual({});
                 expect(gallery.selectPopup().length).toBe(0);
                 if (typeof docEvents !== 'undefined') {
                     for (counter; counter < docEvents['mousemove'].length; counter++) {
@@ -341,12 +372,12 @@ $(document).ready(function() {
     
     // instantiate a human testable gallery
     new moHoverGallery({
-        elements: $('.hover-element'), 
+        thumbs: $('.hover-thumb'), 
         popupId: 'test-mo-hover-gallery', 
         popupClass: 'static-mo-hover-gallery-popup',
         positionPopup: 'positionPopupStatically',
-        disableClosePopup: true,
-        initialIndex: 0
+        skipClosePopup: true,
+        startIndex: 0
     });
 });
 
@@ -361,3 +392,6 @@ function readFile(url, callback) {
         }
     });
 }
+
+// Extra methods needed:
+// - something that checks if the mouse is in a coordinates rectangle
