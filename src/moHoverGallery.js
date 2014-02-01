@@ -166,12 +166,12 @@ moHoverGallery.prototype.getElementCoords = function(element) {
 /**
  * Checks whether a certain position is within a certain DOM element.
  * 
- * @param {Number} top The Y position.
  * @param {Number} left The X position.
+ * @param {Number} top The Y position.
  * @param {Object} element
  * @returns {Boolean}
  */
-moHoverGallery.prototype.isPositionInElement = function(top, left, element) {
+moHoverGallery.prototype.isPositionInElement = function(left, top, element) {
     var coords = this.getElementCoords(element),
         fitsX  = left >= coords.left && left <= coords.right,
         fitsY  = top >= coords.top && top <= coords.bottom;
@@ -183,16 +183,16 @@ moHoverGallery.prototype.isPositionInElement = function(top, left, element) {
  * Extracts a thumb out of the gallery thumbs collection if the passed 
  * coordinates are within it.
  * 
- * @param {Number} top The Y coordinate to search in.
  * @param {Number} left The X coordinate to search in.
+ * @param {Number} top The Y coordinate to search in.
  * @returns {Object|null}
  */
-moHoverGallery.prototype.getThumbByCoords = function(top, left) {
+moHoverGallery.prototype.getThumbByCoords = function(left, top) {
     var self         = this,
         matchedThumb = null;
     if (typeof this.thumbs.get === 'function') {
         this.thumbs.each(function(index, value) {
-            if (self.isPositionInElement(top, left, value)) {
+            if (self.isPositionInElement(left, top, value)) {
                 matchedThumb = value;
             }
         });
@@ -232,7 +232,7 @@ moHoverGallery.prototype.isOverThumb = function(event) {
  * @returns {undefined}
  */
 moHoverGallery.prototype.onMouseMove = function(event) {
-    var thumb         = this.getThumbByCoords(event.pageY, event.pageX),
+    var thumb         = this.getThumbByCoords(event.pageX, event.pageY),
         isOverThumb   = thumb !== null && this.isOverThumb(event),
         isAlreadyOpen = isOverThumb && thumb === this.current;
     if (isOverThumb) {

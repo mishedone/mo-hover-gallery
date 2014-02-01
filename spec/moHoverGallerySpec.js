@@ -334,7 +334,7 @@ $(document).ready(function() {
             it('always being sure to not switch the places of X and Y', function() {
                 spyOn(gallery, 'getThumbByCoords');
                 gallery.onMouseMove({pageX: 25, pageY: 20});
-                expect(gallery.getThumbByCoords).toHaveBeenCalledWith(20, 25);
+                expect(gallery.getThumbByCoords).toHaveBeenCalledWith(25, 20);
             });
         });
         
@@ -392,6 +392,3 @@ function readFile(url, callback) {
         }
     });
 }
-
-// Extra methods needed:
-// - something that checks if the mouse is in a coordinates rectangle
