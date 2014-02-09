@@ -77,9 +77,12 @@ $(document).ready(function() {
                 expect(gallery.onMouseMove.calls.count()).toBe(1);
             });
             it('initializes the gallery if the start index is valid', function() {
+                jasmine.clock().install();
                 var startGallery = new moHoverGallery({thumbs: thumbs, popupId: 'init-mo-hover-gallery-popup', startIndex: 0});
+                jasmine.clock().tick(150);
                 expect(startGallery.current).toBe(startGallery.thumbs[0]);
                 startGallery.destroy();
+                jasmine.clock().uninstall();
             });
             it('does not initialize the gallery if the start index is invalid', function() {
                 var startGallery = new moHoverGallery({thumbs: thumbs, popupId: 'init-mo-hover-gallery-popup', startIndex: 4});

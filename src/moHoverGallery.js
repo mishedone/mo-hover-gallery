@@ -42,7 +42,10 @@ function moHoverGallery(options) {
     // open the popup if there is a valid start index
     start = self.startIndex !== null && typeof self.thumbs[self.startIndex] !== 'undefined';
     if (start) {
-        this.openPopup(self.thumbs[self.startIndex]);
+        // wait for some time before opening due to some sizing bugs
+        setTimeout(function() {
+            self.openPopup(self.thumbs[self.startIndex]);
+        }, 100);
     }
 }
 
@@ -216,7 +219,7 @@ moHoverGallery.prototype.getImageFromThumb = function(thumb) {
 
 /**
  * Adds a custom check so extra rules can defined for when the mouse is over a 
- * thumb or not. This is usefull if you want a scrolling gallery for example.
+ * thumb or not. This is useful if you want a scrolling gallery for example.
  * 
  * @param {Object} event A mouse move event.
  * @returns {Boolean}
