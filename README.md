@@ -1,7 +1,6 @@
 # Mished one's JavaScript hover gallery
 
 ### Short description
-### -----------------
 
 This class creates a "hover" gallery from a set of HTML elements (thumbs). When 
 the user hovers one of those elements a corresponding image is loaded in a popup. 
@@ -16,19 +15,16 @@ An image caching mechanism is implemented for faster image loading.
 The class is fully covered with Jasmine specs.
 
 ### Dependencies
-### ------------
 
 The class is using basic jQuery functionality like selectors. It has been tested 
 with jQuery 1.10.2. 
 
 ### Browsers
-### --------
 
 I've tried running the Jasmine tests on Firefox, IE (7 and above), Chrome, Opera 
 and Safari and got only greens.
 
 ### Example
-### -------
 
 To apply the hover gallery you need an HTML and a JavaScript part. In the HTML 
 part you must provide a list of elements (thumbs). Each of those elements should 
@@ -70,7 +66,6 @@ new moHoverGallery({
 ```
 
 ### How it works
-### ------------
 
 Basically it's really simple. When a hover gallery object is created it does a 
 couple of things - creates the popup, loads the image cache and binds a mouse 
@@ -82,7 +77,6 @@ be tweaked in many ways either by the out of the box options or by replacing
 some class methods.
 
 ### Class variables
-### ---------------
 
 | Variable        | Description 
 | --------------- | -----------
@@ -99,7 +93,6 @@ some class methods.
 | skipClosePopup  | Forces the gallery NOT to close the popup when the mouse leaves a thumb (default: false).
 
 ### Class methods
-### -------------
 
 | Method                                  | Description 
 | --------------------------------------- | -----------
@@ -121,12 +114,10 @@ some class methods.
 | destroy()                               | Removes all external relations of the gallery instance (as we know there is no easy object deletion in JavaScript). 
 
 ### How to run the tests
-### --------------------
 
 It can't be simpler - just open the provided tests/SpecRunner.html in your browser.
 
 ### Something has to be fixed?
-### --------------------------
 
 This is v1.0 of the class so I'm open for all kinds of feedback - comments, 
 constructive criticism, bug reports etc. I'm looking forward for improving the 
