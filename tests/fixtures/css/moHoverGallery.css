@@ -23,11 +23,6 @@ div.mo-hover-gallery ul li a {
 }
 
 /* popup styles */
-div.mo-hover-gallery-popup {
-    position: fixed;
-    top: 10px;
-    left: 10px;
-}
 div.static-mo-hover-gallery-popup {
     position: fixed;
     top: 10px;

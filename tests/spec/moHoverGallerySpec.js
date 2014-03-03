@@ -211,20 +211,24 @@ $(document).ready(function() {
                     expectedLeft = 0,
                     realTop      = 0,
                     realLeft     = 0;
+                popup.css('position', 'static');
                 gallery.openPopup(gallery.thumbs[0]);
                 expectedTop  = (winHeight - popup.height()) / 2;
                 expectedLeft = (winWidth - popup.width()) / 2;
                 realTop      = popup.css('top').replace('px', '') * 1;
                 realLeft     = popup.css('left').replace('px', '') * 1;
+                expect(popup.css('position')).toBe('fixed');
                 expect(Math.floor(realTop)).toBe(Math.floor(expectedTop));
                 expect(Math.floor(realLeft)).toBe(Math.floor(expectedLeft));
             });
             it('next to a gallery thumb', function() {
                 var popup    = gallery.selectPopup(),
                     position = null;
+                popup.css('position', 'static');
                 gallery.positionPopup = 'positionPopupRelativeToThumb';
                 gallery.openPopup(gallery.thumbs[0]);
                 position = $(gallery.thumbs[0]).position();
+                expect(popup.css('position')).toBe('fixed');
                 expect(popup.css('top')).toBe((position.top + 30) + 'px');
                 expect(popup.css('left')).toBe((position.left + 40) + 'px');
             });

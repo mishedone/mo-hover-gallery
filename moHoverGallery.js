@@ -108,11 +108,10 @@ moHoverGallery.prototype.closePopup = function() {
 moHoverGallery.prototype.positionPopupInScreenCenter = function() {
     var winHeight = $(window).height(),
         winWidth  = $(window).width(),
-        popup     = this.selectPopup(),
-        top       = (winHeight - popup.height()) / 2,
-        left      = (winWidth - popup.width()) / 2;
-    popup.css('top', top);
-    popup.css('left', left);
+        popup     = this.selectPopup();
+    popup.css('position', 'fixed');
+    popup.css('top', (winHeight - popup.height()) / 2);
+    popup.css('left', (winWidth - popup.width()) / 2);
 };
 
 /**
@@ -123,11 +122,10 @@ moHoverGallery.prototype.positionPopupInScreenCenter = function() {
 moHoverGallery.prototype.positionPopupRelativeToThumb = function() {
     var thumb    = $(this.current),
         position = thumb.position(),
-        popup    = this.selectPopup(),
-        top      = position.top + (thumb.height() / 2),
-        left     = position.left + (thumb.width() / 2);
-    popup.css('top', top);
-    popup.css('left', left);
+        popup    = this.selectPopup();
+    popup.css('position', 'fixed');
+    popup.css('top', position.top + (thumb.height() / 2));
+    popup.css('left', position.left + (thumb.width() / 2));
 };
 
 /**
