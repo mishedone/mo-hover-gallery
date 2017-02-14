@@ -1,4 +1,4 @@
-# Mishedone's JavaScript hover gallery
+# JavaScript hover gallery
 
 ### Short description
 
