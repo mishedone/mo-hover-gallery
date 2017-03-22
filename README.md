@@ -14,6 +14,11 @@ An image caching mechanism is implemented for faster image loading.
 
 The class is fully covered with Jasmine specs.
 
+### Award winner
+
+This project was nominated in the JS Classes Innovation Award in February 2014 and
+won the 3rd prize. You can find more details [here](https://www.jsclasses.org/package/322-JavaScript-Switch-images-in-a-gallery-when-user-hovers-them.html).
+
 ### Dependencies
 
 The class is using basic jQuery functionality like selectors. It has been tested 
