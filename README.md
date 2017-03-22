@@ -1,4 +1,4 @@
-# Mished one's JavaScript hover gallery
+# JavaScript hover gallery
 
 ### Short description
 
@@ -75,7 +75,7 @@ new moHoverGallery({
 Basically it's really simple. When a hover gallery object is created it does a 
 couple of things - creates the popup, loads the image cache and binds a mouse 
 move event to the document. When the user moves the mouse the class checks if it 
-is over one of the thumbs or not. If so an open popup sequance starts - popup 
+is over one of the thumbs or not. If so an open popup sequence starts - popup
 content is loaded, the popup is positioned and made visible. When the mouse 
 leaves the thumb - the popup is closed. This is the default behaviour which can 
 be tweaked in many ways either by the out of the box options or by replacing 
@@ -86,13 +86,13 @@ some class methods.
 | Variable        | Description 
 | --------------- | -----------
 | thumbs          | A list of the elements that open the popup when hovered.
-| current         | Contains the currently open thumb.
+| current         | Contains the currently opened thumb.
 | popupClass      | Class of the popup container (default: null).
 | popupId         | Id of the popup container (must be unique for each gallery, default: mo-hover-gallery-popup).
 | imageWildcard   | It is used for creating the HTML content of the popup container while opening.
-| popupTemplate   | A template that replaces the HTML of the popup container each time it is opened, here the image wildcard is replaced with a path of the opened image.
+| popupTemplate   | A template that replaces the HTML of the popup container each time it is opened, here the image wildcard is replaced with a path to the opened image.
 | positionPopup   | The name of the positioning function that will be used before each popup opening (default: positionPopupInScreenCenter).
-| imageCache      | Used as a container for the cached images.
+| imageCache      | Container for the cached images.
 | startIndex      | The index of the thumb that should be opened when the gallery is created.
 | skipCreatePopup | Forces the gallery NOT to create it's own popup (default: false).
 | skipClosePopup  | Forces the gallery NOT to close the popup when the mouse leaves a thumb (default: false).
@@ -113,9 +113,9 @@ some class methods.
 | isPositionInElement(left, top, element) | Checks whether a certain position is within a certain DOM element.
 | getThumbByCoords(left, top)             | Extracts a thumb out of the gallery thumbs collection if the passed coordinates are within it.
 | getImageFromThumb(thumb)                | Extracts an image out of a thumb. Override this method if you want to make custom image path extractions.
-| isOverThumb(event)                      | Adds a custom check so extra rules can defined for when the mouse is over a thumb or not. This is useful if you want a scrolling gallery for example.
+| isOverThumb(event)                      | Can provide extra rules when checking whether the mouse is over a thumb or not. This is useful if you want a scrolling gallery for example.
 | onMouseMove(event)                      | Handles mouse move events.
-| loadImageCache()                        | Caches the images that are going to be loaded so things are loaded quickly.
+| loadImageCache()                        | Caches the images that are going to be loaded so things are done faster.
 | destroy()                               | Removes all external relations of the gallery instance (as we know there is no easy object deletion in JavaScript). 
 
 ### How to run the tests
